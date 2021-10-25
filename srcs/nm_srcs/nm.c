@@ -1,5 +1,55 @@
 #include "nm.h"
 
+void	*open_file(char **argv, int file_n)
+{
+	struct stat	buff;
+	int			fd;
+	void		*f;
+
+	if ((fd = open(argv[file_n], O_RDONLY)) < 0)
+	{
+		ft_printf("nm: '%s': No such file\n", argv[file_n]);
+		return (NULL);
+	}
+	if (fstat(fd, &buff) < 0
+	|| !buff.st_size)
+		return (NULL);
+	f = mmap(NULL, buff.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+	return (f == MAP_FAILED ? NULL : f);
+}
+
+int parse_magic(t_elf_file ef)
+{
+	ft_memcpy(ef.elf32header.e_ident, ef.file, 16);
+	ft_memcpy(ef.elf64header.e_ident, ef.file, 16);
+	if (ef.elf32header.e_ident[EI_MAG0] != ELFMAG0  ||
+		ef.elf32header.e_ident[EI_MAG1] != ELFMAG1  ||
+		ef.elf32header.e_ident[EI_MAG2] != ELFMAG2  ||
+		ef.elf32header.e_ident[EI_MAG3] != ELFMAG3  ||
+	 	ef.elf32header.e_ident[EI_CLASS] == ELFCLASSNONE)
+	{
+		ft_printf("nm: %s: file format not recognized\n", ef.fname);
+		return (0);
+	}
+	if (ef.elf32header.e_ident[EI_CLASS] == ELFCLASS32)
+		ft_printf("this is a 32 file\n");
+	else if (ef.elf32header.e_ident[EI_CLASS] == ELFCLASS64)
+		ft_printf("this is a 64 file\n");
+	return (0);
+}
+
+int ft_nm(void *file, char *fname)
+{
+	t_elf_file	ef;
+	ef.fname = fname;
+	ef.file = file;
+	(void) ef;
+	if (parse_magic(ef))
+		return (1);	
+	return (0);
+}
+
+
 int		main(int argc, char **argv)
 {
 	void	*file;
@@ -23,12 +73,12 @@ int		main(int argc, char **argv)
 	}
 	argn = 1;
 	while (argn < argc)
-	{ (void) file;
-	//	if (!(file = open_file(arg_cpy, argn)))
-	//		return (1);
+	{
+		if ((file = open_file(arg_cpy, argn)))
+			if (ft_nm(file, arg_cpy[argn]))
+				return (1);
 		argn++;
 	}
 	free_sp(arg_cpy);
-	ft_printf("done\n");
 	return (0);
 }
