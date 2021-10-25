@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-SRC = nm_srcs/nm.c nm_srcs/utils.c
+SRC = nm_srcs/nm.c nm_srcs/utils.c nm_srcs/elf32.c
 CC = gcc
 CFLAGS = -c -Wall -Wextra -Werror
 OBJ = $(SRC:.c=.o)

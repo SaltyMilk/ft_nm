@@ -20,8 +20,7 @@ void	*open_file(char **argv, int file_n)
 
 int parse_magic(t_elf_file ef)
 {
-	ft_memcpy(ef.elf32header.e_ident, ef.file, 16);
-	ft_memcpy(ef.elf64header.e_ident, ef.file, 16);
+	ft_memcpy(&ef.elf32header, ef.file, sizeof(Elf32_Ehdr));
 	if (ef.elf32header.e_ident[EI_MAG0] != ELFMAG0  ||
 		ef.elf32header.e_ident[EI_MAG1] != ELFMAG1  ||
 		ef.elf32header.e_ident[EI_MAG2] != ELFMAG2  ||
@@ -32,9 +31,12 @@ int parse_magic(t_elf_file ef)
 		return (0);
 	}
 	if (ef.elf32header.e_ident[EI_CLASS] == ELFCLASS32)
-		ft_printf("this is a 32 file\n");
+		parse32elf(ef);
 	else if (ef.elf32header.e_ident[EI_CLASS] == ELFCLASS64)
+	{
+		ft_memcpy(&ef.elf64header, ef.file, sizeof(Elf64_Ehdr));
 		ft_printf("this is a 64 file\n");
+	}
 	return (0);
 }
 
