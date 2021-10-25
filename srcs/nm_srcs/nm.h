@@ -21,10 +21,11 @@ typedef struct s_elf_file
 typedef struct s_symbol
 {
 	long int	addr;
-	char		symbol;
+	char		letter;
 	char		*name;
 
 }				t_symbol;
 
-int parse32elf(t_elf_file ef);
+int 	parse32elf(t_elf_file ef);
+char	get_symletter32(Elf32_Sym sym, Elf32_Shdr *shdr);
 #endif
