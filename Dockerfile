@@ -2,7 +2,7 @@ FROM debian:buster
 MAINTAINER "sel-melc@student.s19.be"
 
 RUN mkdir /ft_nm
-VOLUME ./srcs /ft_nm
+VOLUME ./ /ft_nm
 # Environment setup
 RUN apt-get update\
 	&& apt-get install git -y\
