@@ -1,1 +1,2 @@
-docker run -v /Users/soufiane/Documents/19/ft_nm:/ft_nm -d --name nm nm
+docker build -t nm_sel .
+docker run -d --name nm_sel nm_sel

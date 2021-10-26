@@ -1,6 +1,7 @@
 FROM debian:buster
 MAINTAINER "sel-melc@student.s19.be"
 
+COPY . /le_meilleur_ft_nm
 RUN mkdir /ft_nm
 # Environment setup
 RUN apt-get update\
@@ -21,12 +22,5 @@ RUN echo "deb mirror://mirrors.ubuntu.com/mirrors.txt precise main restricted un
 	echo "deb mirror://mirrors.ubuntu.com/mirrors.txt precise-backports main restricted universe multiverse">>etc/apt/sourcs.list;\
 	echo "deb mirror://mirrors.ubuntu.com/mirrors.txt precise-security main restricted universe multiverse">>etc/apt/sourcs.list;
 
-# Tools installation
-# Feel free to add tools you need here
-RUN apt-get install gdb -y\
-	&& apt-get install lldb -y
-
-RUN git clone https://github.com/radareorg/radare2.git /tmp/radare2
-RUN sh /tmp/radare2/sys/install.sh
 
 CMD while true; do sleep infinity; done
