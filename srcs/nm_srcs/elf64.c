@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-void print_symbols(Elf32_Sym *sects, t_symbol *syms, unsigned int n_sym)
+void print_symbols64(Elf64_Sym *sects, t_symbol *syms, unsigned int n_sym)
 {
 	unsigned int max = 0;
 	unsigned int i;
@@ -29,47 +29,46 @@ void print_symbols(Elf32_Sym *sects, t_symbol *syms, unsigned int n_sym)
 		if (!syms[max].valid || syms[max].used)//Only used or invalid symbols left
 			break;
 		if (syms[max].letter == 'v' || syms[max].letter == 'w' || syms[max].letter == 'U')
-			ft_printf("%8c %c %s\n", ' ', syms[max].letter, syms[max].name);
+			ft_printf("%16c %c %s\n", ' ', syms[max].letter, syms[max].name);
 		else
-			ft_printf("%08x %c %s\n", syms[max].addr, syms[max].letter, syms[max].name);
+			ft_printf("%016l %c %s\n", syms[max].addr , syms[max].letter, syms[max].name);
 		syms[max].used = 1;
 		max = 0;
 	}
 
 }
 
-int parse32elf(t_elf_file ef)
+int parse64elf(t_elf_file ef)
 {
-	unsigned long n_sec = ef.elf32header.e_shnum;
-	unsigned char *ptr = (unsigned char *)ef.file + ef.elf32header.e_shoff;
-	Elf32_Shdr sect_headers[n_sec];
+	unsigned long n_sec = ef.elf64header.e_shnum;
+	unsigned char *ptr = (unsigned char *)ef.file + ef.elf64header.e_shoff;
+	Elf64_Shdr sect_headers[n_sec];
 	unsigned int sym_count = 0;
-
 	for (unsigned long i = 0; i < n_sec; i++) // Parse section headers
-		ft_memcpy(&sect_headers[i], ptr + (sizeof(Elf32_Shdr) * i), sizeof(Elf32_Shdr)); 
+		ft_memcpy(&sect_headers[i], ptr + (sizeof(Elf64_Shdr) * i), sizeof(Elf64_Shdr)); 
 	for (unsigned long i = 0; i < n_sec; i++)
 	{
 		if (sect_headers[i].sh_type == SHT_SYMTAB)//Parse symbole tables
 		{
-			unsigned int n_sym = sect_headers[i].sh_size / sizeof(Elf32_Sym);
-			Elf32_Sym sects[n_sym];
+			unsigned int n_sym = sect_headers[i].sh_size / sizeof(Elf64_Sym);
+			Elf64_Sym sects[n_sym];
 			t_symbol symbols[n_sym];
 			ft_bzero(&symbols, sizeof(t_symbol) * n_sym);
 			for (unsigned long x = 0; x < n_sym; x++)
-				ft_memcpy(&sects[x], (unsigned char*)ef.file + sect_headers[i].sh_offset + (sizeof(Elf32_Sym) * x), sizeof(Elf32_Sym));
+				ft_memcpy(&sects[x], (unsigned char*)ef.file + sect_headers[i].sh_offset + (sizeof(Elf64_Sym) * x), sizeof(Elf64_Sym));
 			for (unsigned int j = 0; j < n_sym; j++)
 			{
-				int ttype = ELF32_ST_TYPE(sects[j].st_info);
+				int ttype = ELF64_ST_TYPE(sects[j].st_info);
 				if (ttype == STT_FUNC || ttype == STT_OBJECT || ttype == STT_NOTYPE)
 				{
 					sym_count++;
 					symbols[j].name = (char *)ef.file + sect_headers[sect_headers[i].sh_link].sh_offset + sects[j].st_name;
 					symbols[j].addr = sects[j].st_value;
-					symbols[j].letter = get_symletter32(sects[j], sect_headers);
+					symbols[j].letter = get_symletter64(sects[j], sect_headers);
 					symbols[j].valid = 1;
 				}
 			}
-			print_symbols(sects, symbols, n_sym);
+			print_symbols64(sects, symbols, n_sym);
 		}
 	}
 	if (!sym_count)

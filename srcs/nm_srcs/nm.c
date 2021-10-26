@@ -35,7 +35,7 @@ int parse_magic(t_elf_file ef)
 	else if (ef.elf32header.e_ident[EI_CLASS] == ELFCLASS64)
 	{
 		ft_memcpy(&ef.elf64header, ef.file, sizeof(Elf64_Ehdr));
-		ft_printf("this is a 64 file\n");
+		parse64elf(ef);
 	}
 	return (0);
 }

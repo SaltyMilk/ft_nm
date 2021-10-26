@@ -26,17 +26,16 @@ char            get_symletter64(Elf64_Sym sym, Elf64_Shdr *shdr)
   else if (shdr[sym.st_shndx].sh_type == SHT_NOBITS
        && shdr[sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
     c = 'B';
-  else if (shdr[sym.st_shndx].sh_type == SHT_PROGBITS
-       && shdr[sym.st_shndx].sh_flags == SHF_ALLOC)
+  else if ((shdr[sym.st_shndx].sh_type == SHT_PROGBITS 
+  	&& (shdr[sym.st_shndx].sh_flags == SHF_ALLOC || shdr[sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_MERGE))))
     c = 'R';
-  else if (shdr[sym.st_shndx].sh_type == SHT_PROGBITS
+  else if ((shdr[sym.st_shndx].sh_type == SHT_PROGBITS
        && shdr[sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+	   || shdr[sym.st_shndx].sh_type == SHT_DYNAMIC)
     c = 'D';
   else if (shdr[sym.st_shndx].sh_type == SHT_PROGBITS
        && shdr[sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
     c = 'T';
-  else if (shdr[sym.st_shndx].sh_type == SHT_DYNAMIC)
-    c = 'D';
   else
     c = 't' - 32;
   if (ELF64_ST_BIND(sym.st_info) == STB_LOCAL && c != '?')

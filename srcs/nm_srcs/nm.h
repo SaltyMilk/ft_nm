@@ -28,5 +28,7 @@ typedef struct s_symbol
 }				t_symbol;
 
 int 	parse32elf(t_elf_file ef);
+int		parse64elf(t_elf_file ef);
 char	get_symletter32(Elf32_Sym sym, Elf32_Shdr *shdr);
+char    get_symletter64(Elf64_Sym sym, Elf64_Shdr *shdr);
 #endif

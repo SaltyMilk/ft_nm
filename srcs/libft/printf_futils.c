@@ -71,6 +71,9 @@ char	conversion_handle(const char **fs, va_list a, int *char_print)
 	else if (c == 'x')
 		return (display_hstr(' ', flags,
 				ultha(va_arg(a, t_ui), 0), char_print));
+	else if (c == 'l')
+		return (display_hstr(' ', flags,
+				ultha(va_arg(a, unsigned long int), 0), char_print));
 	else if (c == 'X')
 		return (display_hstr(' ', flags,
 				ultha(va_arg(a, t_ui), 1), char_print));

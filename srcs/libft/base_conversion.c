@@ -85,7 +85,7 @@ char	*ultha(unsigned long long n, char cap)
 	while ((n = n / 16))
 		hexdigits++;
 	hexdigits++;
-	if (!(hstr = malloc((hexdigits + 1) * sizeof(char))))
+	if (!(hstr = ft_calloc((hexdigits + 1),sizeof(char))))
 		return (NULL);
 	hstr[hexdigits] = 0;
 	while (hexdigits--)

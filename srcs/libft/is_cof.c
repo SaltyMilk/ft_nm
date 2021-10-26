@@ -20,7 +20,7 @@ char	is_conversion(char c)
 {
 	if (c == 's' || c == 'd' || c == '%' || c == 'u'
 			|| c == 'c' || c == 'x' || c == 'X' || c == 'p'
-			|| c == 'd' || c == 'i')
+			|| c == 'd' || c == 'i' || c == 'l')
 		return (1);
 	return (0);
 }
