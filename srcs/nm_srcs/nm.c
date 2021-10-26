@@ -1,6 +1,6 @@
 #include "nm.h"
 
-void	*open_file(char **argv, int file_n)
+void	*open_file(char **argv, int file_n, unsigned int *fsize)
 {
 	struct stat	buff;
 	int			fd;
@@ -15,13 +15,15 @@ void	*open_file(char **argv, int file_n)
 	|| !buff.st_size)
 		return (NULL);
 	f = mmap(NULL, buff.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+	*fsize = buff.st_size;
 	return (f == MAP_FAILED ? NULL : f);
 }
 
 int parse_magic(t_elf_file ef)
 {
 	ft_memcpy(&ef.elf32header, ef.file, sizeof(Elf32_Ehdr));
-	if (ef.elf32header.e_ident[EI_MAG0] != ELFMAG0  ||
+	if (sizeof(Elf32_Addr) > ef.fsize				||
+		ef.elf32header.e_ident[EI_MAG0] != ELFMAG0  ||
 		ef.elf32header.e_ident[EI_MAG1] != ELFMAG1  ||
 		ef.elf32header.e_ident[EI_MAG2] != ELFMAG2  ||
 		ef.elf32header.e_ident[EI_MAG3] != ELFMAG3  ||
@@ -31,20 +33,25 @@ int parse_magic(t_elf_file ef)
 		return (0);
 	}
 	if (ef.elf32header.e_ident[EI_CLASS] == ELFCLASS32)
-		parse32elf(ef);
+	{
+		if (parse32elf(ef))
+			ft_printf("nm: File corrupted\n");
+	}
 	else if (ef.elf32header.e_ident[EI_CLASS] == ELFCLASS64)
 	{
 		ft_memcpy(&ef.elf64header, ef.file, sizeof(Elf64_Ehdr));
-		parse64elf(ef);
+		if (parse64elf(ef))
+			ft_printf("nm: File corrupted\n");
 	}
 	return (0);
 }
 
-int ft_nm(void *file, char *fname)
+int ft_nm(void *file, char *fname, unsigned int fsize)
 {
 	t_elf_file	ef;
 	ef.fname = fname;
 	ef.file = file;
+	ef.fsize = fsize;
 	(void) ef;
 	if (parse_magic(ef))
 		return (1);	
@@ -54,8 +61,9 @@ int ft_nm(void *file, char *fname)
 
 int		main(int argc, char **argv)
 {
-	void	*file;
-	int		argn;
+	void			*file;
+	int				argn;
+	unsigned int	fsize;
 
 	char **arg_cpy;
 
@@ -76,11 +84,11 @@ int		main(int argc, char **argv)
 	argn = 1;
 	while (argn < argc)
 	{
-		if ((file = open_file(arg_cpy, argn)))
+		if ((file = open_file(arg_cpy, argn, &fsize)))
 		{
 			if (argc > 2)
 				ft_printf("\n%s:\n", argv[argn]);
-			if (ft_nm(file, arg_cpy[argn]))
+			if (ft_nm(file, arg_cpy[argn], fsize))
 				return (1);
 		}
 		argn++;

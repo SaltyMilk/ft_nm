@@ -11,11 +11,12 @@
 
 typedef struct s_elf_file
 {
-	void		*file;
-	char		*fname;
-	Elf32_Ehdr	elf32header;
-	Elf64_Ehdr	elf64header;
-	int			endian;
+	void			*file;
+	char			*fname;
+	Elf32_Ehdr		elf32header;
+	Elf64_Ehdr		elf64header;
+	int				endian;
+	unsigned int	fsize;
 }				t_elf_file;
 
 typedef struct s_symbol

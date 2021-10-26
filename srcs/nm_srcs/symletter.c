@@ -1,4 +1,5 @@
 #include "nm.h"
+
 char            get_symletter64(Elf64_Sym sym, Elf64_Shdr *shdr)
 {
   char  c;
@@ -45,7 +46,6 @@ char            get_symletter64(Elf64_Sym sym, Elf64_Shdr *shdr)
   return c;
 }
 
-
 char            get_symletter32(Elf32_Sym sym, Elf32_Shdr *shdr)
 {
   char  c;
@@ -73,19 +73,20 @@ char            get_symletter32(Elf32_Sym sym, Elf32_Shdr *shdr)
   else if (shdr[sym.st_shndx].sh_type == SHT_NOBITS
        && shdr[sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
     c = 'B';
-  else if (shdr[sym.st_shndx].sh_type == SHT_PROGBITS
-       && shdr[sym.st_shndx].sh_flags == SHF_ALLOC)
+  else if ((shdr[sym.st_shndx].sh_type == SHT_PROGBITS 
+  	&& (shdr[sym.st_shndx].sh_flags == SHF_ALLOC || shdr[sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_MERGE))))
     c = 'R';
-  else if (shdr[sym.st_shndx].sh_type == SHT_PROGBITS
+  else if ((shdr[sym.st_shndx].sh_type == SHT_PROGBITS
        && shdr[sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+	   || shdr[sym.st_shndx].sh_type == SHT_DYNAMIC 
+	   || (ELF32_ST_BIND(sym.st_info) == STB_GLOBAL && shdr[sym.st_shndx].sh_type == STT_OBJECT && sym.st_shndx == SHN_UNDEF))
     c = 'D';
   else if (shdr[sym.st_shndx].sh_type == SHT_PROGBITS
-       && shdr[sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
+	    || shdr[sym.st_shndx].sh_type == SHT_INIT_ARRAY
+		|| shdr[sym.st_shndx].sh_type== SHT_FINI_ARRAY)
     c = 'T';
-  else if (shdr[sym.st_shndx].sh_type == SHT_DYNAMIC)
-    c = 'D';
   else
-    c = 't' - 32;
+    c = '?';
   if (ELF32_ST_BIND(sym.st_info) == STB_LOCAL && c != '?')
     c += 32;
   return c;

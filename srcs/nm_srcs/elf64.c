@@ -44,6 +44,9 @@ int parse64elf(t_elf_file ef)
 	unsigned char *ptr = (unsigned char *)ef.file + ef.elf64header.e_shoff;
 	Elf64_Shdr sect_headers[n_sec];
 	unsigned int sym_count = 0;
+
+	if ((ef.elf32header.e_shoff+ (sizeof(Elf64_Shdr) * n_sec)) > ef.fsize)//boundary check
+		return (1);
 	for (unsigned long i = 0; i < n_sec; i++) // Parse section headers
 		ft_memcpy(&sect_headers[i], ptr + (sizeof(Elf64_Shdr) * i), sizeof(Elf64_Shdr)); 
 	for (unsigned long i = 0; i < n_sec; i++)
@@ -54,6 +57,8 @@ int parse64elf(t_elf_file ef)
 			Elf64_Sym sects[n_sym];
 			t_symbol symbols[n_sym];
 			ft_bzero(&symbols, sizeof(t_symbol) * n_sym);
+			if ((sect_headers[i].sh_offset + (sizeof(Elf64_Sym) * n_sym)) > ef.fsize)//boundary check
+				return (1);
 			for (unsigned long x = 0; x < n_sym; x++)
 				ft_memcpy(&sects[x], (unsigned char*)ef.file + sect_headers[i].sh_offset + (sizeof(Elf64_Sym) * x), sizeof(Elf64_Sym));
 			for (unsigned int j = 0; j < n_sym; j++)
@@ -62,6 +67,8 @@ int parse64elf(t_elf_file ef)
 				if (ttype == STT_FUNC || ttype == STT_OBJECT || ttype == STT_NOTYPE)
 				{
 					sym_count++;
+					if (sect_headers[sect_headers[i].sh_link].sh_offset + sects[j].st_name > ef.fsize)//boundary_check
+						return (1);
 					symbols[j].name = (char *)ef.file + sect_headers[sect_headers[i].sh_link].sh_offset + sects[j].st_name;
 					symbols[j].addr = sects[j].st_value;
 					if (!ft_strncmp(symbols[j].name, "__local_asan_preinit", ft_strlen(symbols[j].name) + 1))
