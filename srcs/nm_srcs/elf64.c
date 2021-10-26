@@ -64,7 +64,10 @@ int parse64elf(t_elf_file ef)
 					sym_count++;
 					symbols[j].name = (char *)ef.file + sect_headers[sect_headers[i].sh_link].sh_offset + sects[j].st_name;
 					symbols[j].addr = sects[j].st_value;
-					symbols[j].letter = get_symletter64(sects[j], sect_headers);
+					if (!ft_strncmp(symbols[j].name, "__local_asan_preinit", ft_strlen(symbols[j].name) + 1))
+						symbols[j].letter = 'D';
+					else 
+						symbols[j].letter = get_symletter64(sects[j], sect_headers);
 					symbols[j].valid = 1;
 				}
 			}

@@ -31,13 +31,15 @@ char            get_symletter64(Elf64_Sym sym, Elf64_Shdr *shdr)
     c = 'R';
   else if ((shdr[sym.st_shndx].sh_type == SHT_PROGBITS
        && shdr[sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
-	   || shdr[sym.st_shndx].sh_type == SHT_DYNAMIC)
+	   || shdr[sym.st_shndx].sh_type == SHT_DYNAMIC 
+	   || (ELF64_ST_BIND(sym.st_info) == STB_GLOBAL && shdr[sym.st_shndx].sh_type == STT_OBJECT && sym.st_shndx == SHN_UNDEF))
     c = 'D';
   else if (shdr[sym.st_shndx].sh_type == SHT_PROGBITS
-       && shdr[sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
+	    || shdr[sym.st_shndx].sh_type == SHT_INIT_ARRAY
+		|| shdr[sym.st_shndx].sh_type== SHT_FINI_ARRAY)
     c = 'T';
   else
-    c = 't' - 32;
+    c = '?';
   if (ELF64_ST_BIND(sym.st_info) == STB_LOCAL && c != '?')
     c += 32;
   return c;
