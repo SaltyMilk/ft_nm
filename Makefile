@@ -19,7 +19,7 @@ all : ft_nm
 
 ft_nm : $(OBJ)
 	make -C libft
-	$(CC) -fsanitize=address -o ft_nm  $(NAME) $(OBJ)  libft/libft.a
+	$(CC) -o ft_nm  $(NAME) $(OBJ)  libft/libft.a
 
 %.o: %.c
 	$(CC) $(CFLAGS) $? -o $@
