@@ -77,8 +77,12 @@ int		main(int argc, char **argv)
 	while (argn < argc)
 	{
 		if ((file = open_file(arg_cpy, argn)))
+		{
+			if (argc > 2)
+				ft_printf("\n%s:\n", argv[argn]);
 			if (ft_nm(file, arg_cpy[argn]))
 				return (1);
+		}
 		argn++;
 	}
 	free_sp(arg_cpy);

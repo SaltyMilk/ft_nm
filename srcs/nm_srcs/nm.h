@@ -23,7 +23,8 @@ typedef struct s_symbol
 	long int	addr;
 	char		letter;
 	char		*name;
-
+	char		used;
+	char		valid;
 }				t_symbol;
 
 int 	parse32elf(t_elf_file ef);

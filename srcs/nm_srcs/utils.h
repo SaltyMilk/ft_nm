@@ -7,5 +7,6 @@
 unsigned int sp_len(char **sp);
 void free_sp(char **sp);
 char **copy_sp(char **sp);
+unsigned int smallest_len(char *s1, char *s2);
 
 #endif
