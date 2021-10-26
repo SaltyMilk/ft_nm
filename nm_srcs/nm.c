@@ -75,9 +75,16 @@ int		main(int argc, char **argv)
 		if (!(arg_cpy = malloc(sizeof(char *) * 3)))
 			return (1);
 		if (!(arg_cpy[0] = ft_strdup(argv[0])))
+		{
+			free(arg_cpy);
 			return (1);
+		}
 		if (!(arg_cpy[1] = ft_strdup("a.out")))
+		{
+			free(arg_cpy);
+			free(arg_cpy[0]);
 			return (1);
+		}
 		arg_cpy[2] = NULL;
 		argc = 2;
 	}
